@@ -1,6 +1,6 @@
 '''
 Akond Rahman 
-May 05, 2021
+May 5, 2021
 Testing for graph utilities 
 '''
 
