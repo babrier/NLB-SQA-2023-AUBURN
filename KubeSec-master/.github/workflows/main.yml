@@ -1,0 +1,21 @@
+name: Push Security Validation
+on:
+  push:
+    branches:
+      - main
+jobs:
+  fuzzing:
+    runs-on: ubuntu-latest
+    steps:
+      
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+      
+      - name: Python Setup
+        uses: actions/setup-python@v4.7.1
+      
+      - name: Install Requirements
+        run: pip install -r requirements.txt
+      
+      - name: Fuzzer
+        run: python fuzz.py
