@@ -1,11 +1,15 @@
 ## NLB Project Report Markdown File
+
 - Ben Brierly - I performed task 4.a which created a githook to run and
   report all security weaknesses in the project in a CSV file. The githook
   was created in a modiffied pre-commit file that used bandit to reccurssively
   select and analyze all python files. The resulting analysis was placed in a
-  csv where a vareity of issues were found including hardcoded passwords and
-  processes having partial executable paths.
-
+  csv where a vareity of issues were found including hardcoded passwords,
+  processes having partial executable paths, and subprocesses without shells.
+  From doing this I gained an understanding of the value of modifiying
+  githooks, in that, one static analysis tool (like bandit) can prevent pushing
+  vulnerable software to production which otherwise could go unnoticed by developers.
+  
 - Liam Hussey - I performed task 4.b where I created a fuzz.py file that 
 fuzzed five methods for potential vulnerabilities
 (isValidUserName, isValidPasswordName, isValidKey, readYAMLAsStr, getYAMLFiles).
