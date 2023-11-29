@@ -4,7 +4,7 @@ from scanner import (isValidUserName,
 from parser import readYAMLAsStr
 from graphtaint import getYAMLFiles
 
-
+# Build fuzzing method.
 def method_fuzzer():
 
     key_1 = '     rekeyboarded     '
