@@ -1,6 +1,6 @@
 ## NLB Project Report Markdown File
 
-- Ben Brierly - I performed task 4.a which created a githook to run and
+- Ben Brierly - I completed task 4.a which created a githook to run and
   report all security weaknesses in the project in a CSV file. The githook
   was created in a modiffied pre-commit file that used bandit to reccurssively
   select and analyze all python files. The resulting analysis was placed in a
