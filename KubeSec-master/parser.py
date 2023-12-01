@@ -140,8 +140,9 @@ def getValsFromKey(dict_, target, list_holder  ):
                 elif isinstance(value, list):
                     for ls in value:
                         getValsFromKey(ls, target, list_holder)
-	logger.debug(f"{dict_} is not a dict.")
-	logger.info('EXITING getValsFromKey()')
+    else:
+        logger.debug(f"{dict_} is not a dict. Skipping.")
+    logger.info('EXITING getValsFromKey()')
 
 def checkIfValidHelm(path_script):
     val_ret = False 
