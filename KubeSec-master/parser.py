@@ -15,6 +15,20 @@ import re
 import subprocess
 import os
 
+'''
+Logging currently present in:
+	1. getValsFromKey()
+	2. loadMultiYAML()
+	3. checkParseError()
+	4. find_json_path_keys()
+	5. update_json_paths()
+'''
+from logger import create_logger
+import logging
+
+create_logger('parser.py')
+logger = logging.getLogger('logs')
+
 #update basepath
 base_path = r" "
 
@@ -113,7 +127,8 @@ def getValsFromKey(dict_, target, list_holder  ):
     '''
     If you give a key, then this function gets the corresponding values 
     Multiple values are returned if there are keys with the same name  
-    '''    
+    '''
+	logger.info('ENTERING getValsFromKey()')
     if ( isinstance( dict_, dict ) ):
         for key, value in dict_.items():
             # print( key, len(key) , target, len( target ), value  )
@@ -125,6 +140,8 @@ def getValsFromKey(dict_, target, list_holder  ):
                 elif isinstance(value, list):
                     for ls in value:
                         getValsFromKey(ls, target, list_holder)
+	logger.debug(f"{dict_} is not a dict.")
+	logger.info('EXITING getValsFromKey()')
 
 def checkIfValidHelm(path_script):
     val_ret = False 
@@ -140,6 +157,7 @@ def readYAMLAsStr( path_script ):
 
 # This function checks whether our parser throws an exception for reading the YAML file. 
 def checkParseError( path_script ):
+	logger.info('ENTERING checkParseError().')
     flag = True
     with open(path_script, constants.FILE_READ_FLAG) as yml:
         yaml = ruamel.yaml.YAML()
@@ -148,16 +166,22 @@ def checkParseError( path_script ):
                 pass
         except ruamel.yaml.parser.ParserError as parse_error:
             flag = False
+			logger.debug(f"ruamel.yaml.parser.ParserError caught in dictionary: {dictionary}")
             print(constants.YAML_SKIPPING_TEXT)           
         except ruamel.yaml.error.YAMLError as exc:
             flag = False
+			logger.debug(f"ruamel.yaml.error.YAMLError caught in dictionary: {dictionary}")
             print( constants.YAML_SKIPPING_TEXT  )    
         except UnicodeDecodeError as err_: 
             flag = False
+			logger.debug(f"UnicodeDecodeError caught in dictionary: {dictionary}")
             print( constants.YAML_SKIPPING_TEXT  )
-    return flag
+            
+    logger.info(f"EXITING checkParseError(). Returning: {flag}")
+	return flag
 
 def loadMultiYAML( script_ ):
+	logger.info('ENTERING loadMultiYAML()')
     dicts2ret = []  
     with open(script_, constants.FILE_READ_FLAG  ) as yml_content :
         yaml = ruamel.yaml.YAML()
@@ -166,18 +190,24 @@ def loadMultiYAML( script_ ):
             for d_ in yaml.load_all(yml_content) :                
                 # print('='*25)
                 # print(d_)
+				logger.info(f"Appending {d_} to dicts2ret")
                 dicts2ret.append( d_ )
         except ruamel.yaml.parser.ParserError as parse_error:
-            print(constants.YAML_SKIPPING_TEXT)           
+            logger.debug(f"ruamel.yaml.parser.ParserError for d_: {d_}")
+			print(constants.YAML_SKIPPING_TEXT)           
         except ruamel.yaml.error.YAMLError as exc:
+			logger.debug(f"ruamel.yaml.error.YAMLError for d_: {d_}")
             print( constants.YAML_SKIPPING_TEXT  )    
-        except UnicodeDecodeError as err_: 
+        except UnicodeDecodeError as err_:
+			logger.debug(f"UnicodeDecodeError for d_: {d_}") 
             print( constants.YAML_SKIPPING_TEXT  )
         
         path = find_json_path_keys(dicts2ret)
+		logger.info('In loadMultiYAML(), path assigned.')
         #print(dicts2ret)
         no_exception = checkParseError(script_)
         if no_exception:
+			logger.info('No exceptions found.')
             # for debugging purposes
 
             path = find_json_path_keys(dicts2ret) #, key_jsonpath_mapping
@@ -194,8 +224,10 @@ def loadMultiYAML( script_ ):
             # print(type(dicts2ret))
             # for d in dicts2ret:
             #     print(type(d))
-                
+        else:
+			logger.info('Exceptions found.')       
         #print(dicts2ret)
+		logger.info('EXITING loadMultiYAML()')
     return dicts2ret
 
 
@@ -230,6 +262,7 @@ the parent_path (root jsonpath), paths(additional paths) parameters are optional
 This function returns jsonpath for each key in the yaml file and also populates key_jsonpath_mapping dictionary"""
 
 def find_json_path_keys(json_file, parent_path='', paths=None):
+	logger.info('ENTERING find_json_path_keys()')
     #key_jsonpath_mapping = {}
     # print(type(json_file))
 
@@ -250,7 +283,8 @@ def find_json_path_keys(json_file, parent_path='', paths=None):
             """The following condition is used if there is any key: value mapping like jinja format sych as key: {{value}}. 
                This is a temporary fix to handle the case"""
             if (isinstance(key,ruamel.yaml.comments.CommentedKeyMap) and value is None) or isinstance(key,int):
-                pass
+                logger.debug(f"key: {key} is CommentedKeyMap or int. Passing.") 
+				pass
             else:
                 if regex_key_dot.match(key):              
                     str = regex_special_character_removal.sub("*",key)
@@ -267,7 +301,7 @@ def find_json_path_keys(json_file, parent_path='', paths=None):
                         if path not in key_jsonpath_mapping[key]:
                             key_jsonpath_mapping[key].append(path)
                         # print("DOT Keys -->",key_jsonpath_mapping[key])
-                                    
+                    logger.debug(f"Appending path to paths where regex_key_dot.match(key) is True. Path: {path}")                
                     paths.append(path)
                     find_json_path_keys(value, parent_path=path, paths=paths)
                 else:
@@ -283,21 +317,26 @@ def find_json_path_keys(json_file, parent_path='', paths=None):
                         #print(key_jsonpath_mapping) 
                     #key_jsonpath_mapping[key] =path
                     #print(key_jsonpath_mapping)
+					logger.debug(f"Appending path to paths where regex_key_dot.match(key) is False. Path: {path}")
                     paths.append(path)          
                     find_json_path_keys(value, parent_path=path, paths=paths)
     elif isinstance(json_file, list):
         for index, value in enumerate(json_file):
             path_withindex = f"{parent_path}[{index}]"
             path = regex_remove_initial_index.sub('',path_withindex)
+			logger.debug(f"Appending path to paths where json_file is a list. Path: {path}")
             paths.append(path)
             find_json_path_keys(value, parent_path=path, paths=paths)
-    return paths 
+    
+	logger.info('EXITING find_JSON_path_keys()')
+	return paths 
     
 
 """"The following function is used to update the json path in the key_jsonpath_mapping dictionary.
 Useful in MultiYaml file format but redundant in single yaml Need to merge with the above function """
 
 def update_json_paths (paths):
+	logger.info('ENTERING update_json_paths()')
     #[3].metadata.name --> .metadata.name
     regex_remove_initial_index = re.compile("^/?(\[)([0-9])+(\])")
     json_path =[]
@@ -306,8 +345,12 @@ def update_json_paths (paths):
     for path in paths:            
         path_remove_initial_index = regex_remove_initial_index.sub('',path)
         if(path_remove_initial_index != remove):
+			logger.debug(f"Appending path to json_path. Path = {path}")
             json_path.append(path_remove_initial_index)
-            updated_paths.append(path_remove_initial_index)        
+            updated_paths.append(path_remove_initial_index)
+		else:
+			logger.debug('Path is empty. Skipping.')
+	logger.info('EXITING update_json_paths()')        
     return json_path
     
 
@@ -414,5 +457,7 @@ def getSingleDict4MultiDocs( lis_dic ):
 
 
 if __name__=='__main__':
+	logger.info('ENTERING parser.py')
     yaml_path = pl.Path(base_path,'test.yaml')
     dic_lis   = loadMultiYAML(yaml_path)
+	logger.info('EXITING parser.py')
