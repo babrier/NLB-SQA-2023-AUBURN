@@ -26,7 +26,7 @@ Logging currently present in:
 from logger import create_logger
 import logging
 
-create_logger('parser.py')
+create_logger('parser')
 logger = logging.getLogger('logs')
 
 #update basepath
