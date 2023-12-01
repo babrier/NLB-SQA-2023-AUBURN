@@ -21,3 +21,8 @@ thoughtfully design security into your code and there will still be vulnerabilit
 did not take into account. That is why it is important to have a process such as fuzzing in 
 order to catch and eliminate harmful vulnerabilities in your code.
 
+* Nolan Evans - Task: 4.c
+  * Added forensics to 5 methods in parser.py: getValsFromKey(), loadMultiYAML(), checkParseError(), find_json_path_keys(), update_json_paths(). Logs focus on tracking the flow of the program, logging data as it is manipulated, and logging erros/exceptions.
+  * Made logger.py, which uses the logging package to initalize a logger. logger.py adds all logs to the logs subdirectory.
+  * Lesson learned: logging is a useful tool for debugging, because we have a record of when things go wrong and where they went wrong. Adding logs is fairly simple to do, and is extremly useful for analysis of a tools performance.
+
