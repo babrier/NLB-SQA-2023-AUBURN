@@ -143,6 +143,7 @@ def getValsFromKey(dict_, target, list_holder  ):
     else:
         logger.debug(f"{dict_} is not a dict.")
     logger.info('EXITING getValsFromKey()')
+    #print(logger)
 
 def checkIfValidHelm(path_script):
     val_ret = False 
@@ -460,5 +461,5 @@ def getSingleDict4MultiDocs( lis_dic ):
 if __name__=='__main__':
     logger.info('ENTERING parser.py')
     yaml_path = pl.Path(base_path,'test.yaml')
-    dic_lis   = loadMultiYAML(yaml_path)
+    dic_lis   = loadMultiYAML(yml_path)
     logger.info('EXITING parser.py')

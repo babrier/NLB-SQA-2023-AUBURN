@@ -6,7 +6,10 @@ def create_logger(script_name):
 	logger.setLevel(logging.DEBUG)
 
 	fileName = f"./logs/{script_name}_on_{datetime.now().strftime('%m-%d-%Y@%H:%M:%S')}.log"
-	handler = logging.FileHandler(fileName, mode = 'w')
+
+	fileName_Readme = f"./logs/README.md"
+
+	handler = logging.FileHandler(fileName_Readme, mode = 'w')
 	formatter = logging.Formatter('%(asctime)s | %(levelname)s | %(message)s')
 
 	handler.setFormatter(formatter)
