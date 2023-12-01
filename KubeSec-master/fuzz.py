@@ -40,7 +40,7 @@ def method_fuzzer():
         print('Unsuccessful fuzzing: '
               'try another input to find errors.\n\n')
 
-    key_4 = 'README.MD'
+    key_4 = 'README.md'
     fuzz_4  = readYAMLAsStr(key_4)
     print('Fuzzing readYAMLAsStr(' + "'" + key_4 + "'" + ')')
 
